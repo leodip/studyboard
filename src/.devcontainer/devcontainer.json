@@ -1,0 +1,24 @@
+{
+    "name": "dev-container-server",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": ".."
+    },
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "formulahendry.auto-close-tag",
+                "formulahendry.auto-rename-tag",
+                "GitHub.copilot",
+                "GitHub.copilot-chat",
+                "heybourn.headwind",
+                "vscode-icons-team.vscode-icons",
+                "bradlc.vscode-tailwindcss"
+            ]
+        }
+    },
+    "features": {
+        "ghcr.io/devcontainers/features/git:1": {}
+    }
+}
