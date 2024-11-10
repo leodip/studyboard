@@ -4,6 +4,7 @@ import { auth, frontend } from '../config/index.js';
 import { aesGcmEncryption } from '../utils/crypto.js';
 import { requireAuth } from '../middleware/requireAuth.js';
 import { getDiscoveryConfig } from '../server.js';
+import crypto from 'crypto';
 
 const router = express.Router();
 
@@ -31,7 +32,6 @@ router.get('/login', async (req, res) => {
         };
 
         const url = client.buildAuthorizationUrl(discoveryConfig, parameters);
-        console.log('Generated authorization URL:', url.toString());
 
         req.session.authParams = {
             code_verifier,
@@ -49,7 +49,6 @@ router.get('/login', async (req, res) => {
 // Callback route handler
 router.get('/callback', async (req, res) => {
     try {
-        console.log('In callback');
 
         if (req.query.error) {
             console.error('Auth server error:', {
@@ -117,7 +116,7 @@ router.get('/user-info', requireAuth, (req, res) => {
         email: req.session.user?.idTokenClaims?.email,
         sub: req.session.user?.idTokenClaims?.sub
     };
-    console.log('User:', user);
+    console.log('/user-info called. User:', user);
     res.json({ user });
 });
 

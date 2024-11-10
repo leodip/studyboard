@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { apiUrl, endpoints } from '../config';
+import { apiUrl, endpoints } from '../../config';
 
 const LoginStatus = () => {
     const [user, setUser] = useState(null);

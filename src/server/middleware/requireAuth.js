@@ -12,7 +12,7 @@ const isTokenExpired = (claims) => {
     if (remainingSeconds > 0) {
         console.log(`Token will expire in ${remainingSeconds} seconds`);
     } else {
-        console.log('Token has expired');
+        console.log('Token is expired');
     }
 
     return currentTime >= expirationTime;
@@ -26,12 +26,9 @@ const getTokenRemainingTime = (claims) => {
 };
 
 export const requireAuth = async (req, res, next) => {
-
-    console.log('requireAuth');
-
     // Step 1: Check if there's a user in the session
     if (!req.session.user) {
-        console.log('no user in session');
+        console.log('No user in session (not authenticated)');
         return res.status(401).json({
             error: 'Not authenticated',
             requiresLogin: true
@@ -48,15 +45,12 @@ export const requireAuth = async (req, res, next) => {
         });
     }
 
-    console.log('got claims. checking if token is expired');
-
     // Step 3: Check token expiration
     if (isTokenExpired(claims)) {
-        console.log('token is expired');
         // Step 4: Check for refresh token
         if (req.session.user.refresh_token) {
             try {
-                console.log('trying to refresh token');
+                console.log('Will try to refresh token');
                 // Step 5: Attempt automatic refresh
                 const discoveryConfig = getDiscoveryConfig();
                 if (!discoveryConfig) {
@@ -68,11 +62,11 @@ export const requireAuth = async (req, res, next) => {
                     req.session.user.refresh_token
                 );
 
-                console.log('token refreshed. updating session');
+                console.log('Token refreshed. Updating session...');
 
                 // Step 6: Update session with new tokens
                 const idTokenClaims = tokens.claims();
-                console.log(idTokenClaims);
+
                 req.session.user = {
                     id_token: tokens.id_token,
                     idTokenClaims,
@@ -82,7 +76,7 @@ export const requireAuth = async (req, res, next) => {
 
                 // Add remaining time to response headers
                 const remainingTime = getTokenRemainingTime(idTokenClaims);
-                console.log('remaining time:', remainingTime);
+                console.log('Remaining time after refresh:', remainingTime);
                 res.set('X-Token-Expires-In', remainingTime.toString());
 
                 // Continue with the request
