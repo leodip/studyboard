@@ -1,5 +1,5 @@
 import * as client from 'openid-client';
-import { getDiscoveryConfig } from './server.js';
+import { getDiscoveryConfig } from '../server.js';
 
 // Utility to check token expiration
 const isTokenExpired = (claims) => {
