@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import MainLayout from './layout/MainLayout';
 import HomePage from './pages/HomePage';
 import ErrorPage from './pages/ErrorPage';
+import MessageOfTheDayManagement from './pages/MessageOfTheDayManagement';
 
 function App() {
     return (
@@ -13,6 +14,14 @@ function App() {
                     element={
                         <MainLayout>
                             <HomePage />
+                        </MainLayout>
+                    }
+                />
+                <Route
+                    path="/motd-management"
+                    element={
+                        <MainLayout>
+                            <MessageOfTheDayManagement />
                         </MainLayout>
                     }
                 />

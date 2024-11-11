@@ -24,7 +24,7 @@ router.get('/login', async (req, res) => {
 
         const parameters = {
             redirect_uri: auth.oidc.redirectUri,
-            scope: 'openid email profile',
+            scope: 'openid email profile groups',
             code_challenge,
             code_challenge_method,
             nonce,
@@ -84,6 +84,7 @@ router.get('/callback', async (req, res) => {
             );
 
             const idTokenClaims = tokens.claims();
+            console.log('ID Token Claims:', idTokenClaims);
 
             req.session.user = {
                 id_token: tokens.id_token,
@@ -114,7 +115,8 @@ router.get('/user-info', requireAuth, (req, res) => {
     const user = {
         name: req.session.user?.idTokenClaims?.name,
         email: req.session.user?.idTokenClaims?.email,
-        sub: req.session.user?.idTokenClaims?.sub
+        sub: req.session.user?.idTokenClaims?.sub,
+        groups: req.session.user?.idTokenClaims?.groups || []
     };
     console.log('/user-info called. User:', user);
     res.json({ user });

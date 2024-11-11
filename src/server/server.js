@@ -4,7 +4,8 @@ import session from 'express-session';
 import * as client from 'openid-client';
 import { cors as _cors, auth, app as _app, server } from './config/index.js';
 import authRouter from './routes/auth.js';
-import helloRouter from './routes/hello.js';
+import { initializeDatabase, checkDatabaseHealth } from './db/index.js';
+import motdRouter from './routes/motd.js';
 
 const app = express();
 let discoveryConfig = null;
@@ -30,8 +31,8 @@ app.get('/health', (req, res) => {
 });
 
 // Routes
-app.use('/api', helloRouter);
 app.use('/', authRouter);
+app.use('/api', motdRouter);
 
 // Error handling
 app.use((err, req, res, next) => {
@@ -66,6 +67,14 @@ async function initializeOIDC() {
 async function startServer() {
     try {
         await initializeOIDC();
+
+        await initializeDatabase();
+        const health = await checkDatabaseHealth();
+        if (!health.healthy) {
+            console.error('Database health check failed:', health);
+            process.exit(1);
+        }
+
         app.listen(server.port, server.host, () => {
             console.log(`Server running at http://${server.host}:${server.port}`);
             console.log(`Environment: ${_app.env}`);

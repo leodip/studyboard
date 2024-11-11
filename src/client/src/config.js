@@ -6,5 +6,6 @@ export const endpoints = {
     login: '/login',
     logout: '/logout',
     callback: '/callback',
-    user: '/user-info'
+    user: '/user-info',
+    motd: '/api/motd'
 };

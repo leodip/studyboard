@@ -1,28 +1,14 @@
-import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import axios from 'axios';
 import { apiUrl, endpoints } from '../../config';
 
-const LoginStatus = () => {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const checkAuth = async () => {
-            try {
-                const response = await axios.get(`${apiUrl}${endpoints.user}`, {
-                    withCredentials: true
-                });
-                console.log('User:', response.data.user);
-                setUser(response.data.user);
-            } catch {
-                setUser(null);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        checkAuth();
-    }, []);
+const LoginStatus = ({ user = null, setUser, loading }) => {
+    const getUserRole = (groups) => {
+        if (!groups) return 'Guest';
+        if (groups.includes('studyboard-admins')) return 'Administrador';
+        if (groups.includes('studyboard-users')) return 'Utilizador';
+        return 'Convidado';
+    };
 
     const handleLogin = async () => {
         try {
@@ -47,6 +33,7 @@ const LoginStatus = () => {
             } else {
                 window.location.href = '/';
             }
+            setUser(null);
         } catch (error) {
             console.error('Logout failed:', error);
             window.location.href = '/';
@@ -57,7 +44,7 @@ const LoginStatus = () => {
         return (
             <div className="flex items-center space-x-2 text-gray-300">
                 <div className="w-4 h-4 border-2 border-gray-300 rounded-full border-t-transparent animate-spin" />
-                <span>Loading...</span>
+                <span>A carregar...</span>
             </div>
         );
     }
@@ -66,9 +53,14 @@ const LoginStatus = () => {
         <div className="flex items-center space-x-4">
             {user ? (
                 <div className="flex items-center space-x-4">
-                    <span className="text-gray-300">
-                        Welcome, <span className="font-medium">{user.name || user.email}</span>
-                    </span>
+                    <div className="flex flex-col items-end">
+                        <span className="text-gray-300">
+                            <span className="font-medium">{user.name || user.email}</span>
+                        </span>
+                        <span className="text-sm text-gray-400">
+                            {getUserRole(user.groups)}
+                        </span>
+                    </div>
                     <button
                         onClick={handleLogout}
                         className="px-3 py-1 text-sm text-gray-300 transition-colors border border-gray-600 rounded-md hover:bg-gray-700"
@@ -86,6 +78,16 @@ const LoginStatus = () => {
             )}
         </div>
     );
+};
+
+LoginStatus.propTypes = {
+    user: PropTypes.shape({
+        name: PropTypes.string,
+        email: PropTypes.string,
+        groups: PropTypes.arrayOf(PropTypes.string)
+    }),
+    setUser: PropTypes.func.isRequired,
+    loading: PropTypes.bool.isRequired
 };
 
 export default LoginStatus;
