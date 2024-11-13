@@ -3,13 +3,6 @@ import axios from 'axios';
 import { apiUrl, endpoints } from '../../config';
 
 const LoginStatus = ({ user = null, setUser, loading }) => {
-    const getUserRole = (groups) => {
-        if (!groups) return 'Guest';
-        if (groups.includes('studyboard-admins')) return 'Administrador';
-        if (groups.includes('studyboard-users')) return 'Utilizador';
-        return 'Convidado';
-    };
-
     const handleLogin = async () => {
         try {
             const response = await axios.get(`${apiUrl}${endpoints.login}`, {
@@ -57,9 +50,6 @@ const LoginStatus = ({ user = null, setUser, loading }) => {
                         <span className="text-gray-300">
                             <span className="font-medium">{user.name || user.email}</span>
                         </span>
-                        <span className="text-sm text-gray-400">
-                            {getUserRole(user.groups)}
-                        </span>
                     </div>
                     <button
                         onClick={handleLogout}
@@ -83,8 +73,7 @@ const LoginStatus = ({ user = null, setUser, loading }) => {
 LoginStatus.propTypes = {
     user: PropTypes.shape({
         name: PropTypes.string,
-        email: PropTypes.string,
-        groups: PropTypes.arrayOf(PropTypes.string)
+        email: PropTypes.string
     }),
     setUser: PropTypes.func.isRequired,
     loading: PropTypes.bool.isRequired

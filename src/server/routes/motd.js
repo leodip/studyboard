@@ -1,7 +1,5 @@
-// /server/routes/motd.js
 import express from 'express';
 import { requireAuth } from '../middleware/requireAuth.js';
-import { requireRole } from '../middleware/requireRole.js';
 import {
     createMessageOfTheDay,
     getAllMessagesOfTheDay,
@@ -25,8 +23,8 @@ router.get('/motd', async (req, res) => {
     }
 });
 
-// Create new message (admin only)
-router.post('/motd', requireAuth, requireRole(['admin']), async (req, res) => {
+// Create new message (authenticated users only)
+router.post('/motd', requireAuth, async (req, res) => {
     try {
         const { message, author, link } = req.body;
         if (!message) {
@@ -44,8 +42,8 @@ router.post('/motd', requireAuth, requireRole(['admin']), async (req, res) => {
     }
 });
 
-// Update message (admin only)
-router.put('/motd/:id', requireAuth, requireRole(['admin']), async (req, res) => {
+// Update message (authenticated users only)
+router.put('/motd/:id', requireAuth, async (req, res) => {
     try {
         const { message, author, link } = req.body;
         const updates = {
@@ -65,8 +63,8 @@ router.put('/motd/:id', requireAuth, requireRole(['admin']), async (req, res) =>
     }
 });
 
-// Delete message (admin only)
-router.delete('/motd/:id', requireAuth, requireRole(['admin']), async (req, res) => {
+// Delete message (authenticated users only)
+router.delete('/motd/:id', requireAuth, async (req, res) => {
     try {
         await deleteMessageOfTheDay(req.params.id);
         res.json({ success: true });

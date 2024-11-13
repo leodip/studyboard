@@ -1,19 +1,17 @@
 import { Link, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-const NavigationMenu = ({ user = { groups: [] } }) => {
+const NavigationMenu = ({ user }) => {
     const location = useLocation();
-    const isAdmin = user?.groups?.includes('studyboard-admins');
 
     const menuItems = [
-        { label: 'Home', path: '/', roles: ['*'] },
-        { label: 'Message of the Day', path: '/motd-management', roles: ['admin'] }
+        { label: 'Home', path: '/', requiresAuth: false },
+        { label: 'Message of the Day', path: '/motd-management', requiresAuth: true }
     ];
 
     const filteredItems = menuItems.filter(item => {
-        if (item.roles.includes('*')) return true;
-        if (item.roles.includes('admin') && isAdmin) return true;
-        return false;
+        if (!item.requiresAuth) return true;
+        return !!user;
     });
 
     return (
@@ -23,8 +21,8 @@ const NavigationMenu = ({ user = { groups: [] } }) => {
                     key={item.path}
                     to={item.path}
                     className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${location.pathname === item.path
-                        ? 'bg-gray-700 text-white'
-                        : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                            ? 'bg-gray-700 text-white'
+                            : 'text-gray-300 hover:bg-gray-700 hover:text-white'
                         }`}
                 >
                     {item.label}
@@ -35,9 +33,7 @@ const NavigationMenu = ({ user = { groups: [] } }) => {
 };
 
 NavigationMenu.propTypes = {
-    user: PropTypes.shape({
-        groups: PropTypes.arrayOf(PropTypes.string)
-    })
+    user: PropTypes.object
 };
 
 export default NavigationMenu;

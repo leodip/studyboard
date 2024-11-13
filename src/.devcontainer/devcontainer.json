@@ -4,7 +4,7 @@
         "dockerfile": "Dockerfile",
         "context": ".."
     },
-    "workspaceFolder": "/workspaces/studyflix/src/",
+    "workspaceFolder": "/workspaces/studyboard/src/",
     "customizations": {
         "vscode": {
             "extensions": [
