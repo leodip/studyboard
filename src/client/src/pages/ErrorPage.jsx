@@ -1,4 +1,5 @@
 import { useSearchParams } from 'react-router-dom';
+import { errorPage as t } from '../translations';
 
 const ErrorPage = () => {
     const [searchParams] = useSearchParams();
@@ -11,27 +12,27 @@ const ErrorPage = () => {
             <div className="w-full max-w-md p-8 bg-gray-800 rounded-lg shadow-lg">
                 <div className="text-center">
                     <h2 className="mb-4 text-3xl font-bold text-red-500">
-                        Authentication Error
+                        {t.title}
                     </h2>
                     <div className="p-4 mb-6 space-y-3 text-left rounded-lg bg-red-900/50">
                         {code && (
                             <p className="text-red-200">
-                                <span className="font-semibold">Error Code:</span> {code}
+                                <span className="font-semibold">{t.errorCode}:</span> {code}
                             </p>
                         )}
                         {error && (
                             <p className="text-red-200">
-                                <span className="font-semibold">Error type:</span> {error}
+                                <span className="font-semibold">{t.errorType}:</span> {error}
                             </p>
                         )}
                         {errorDescription && (
                             <p className="text-red-200">
-                                <span className="font-semibold">Description:</span> {errorDescription}
+                                <span className="font-semibold">{t.description}:</span> {errorDescription}
                             </p>
                         )}
                         {!code && !error && !errorDescription && (
                             <p className="text-red-200">
-                                An unknown error occurred during authentication.
+                                {t.unknownError}
                             </p>
                         )}
                     </div>
@@ -39,7 +40,7 @@ const ErrorPage = () => {
                         onClick={() => window.location.href = '/'}
                         className="px-6 py-2 font-bold text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700"
                     >
-                        Return Home
+                        {t.returnHome}
                     </button>
                 </div>
             </div>

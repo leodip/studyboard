@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import { apiUrl, endpoints } from '../../config';
+import { auth } from '../../translations.js';
 
 const LoginStatus = ({ user = null, setUser, loading }) => {
     const handleLogin = async () => {
@@ -37,7 +38,7 @@ const LoginStatus = ({ user = null, setUser, loading }) => {
         return (
             <div className="flex items-center space-x-2 text-gray-300">
                 <div className="w-4 h-4 border-2 border-gray-300 rounded-full border-t-transparent animate-spin" />
-                <span>A carregar...</span>
+                <span>{auth.loading}</span>
             </div>
         );
     }
@@ -55,7 +56,7 @@ const LoginStatus = ({ user = null, setUser, loading }) => {
                         onClick={handleLogout}
                         className="px-3 py-1 text-sm text-gray-300 transition-colors border border-gray-600 rounded-md hover:bg-gray-700"
                     >
-                        Logout
+                        {auth.logout}
                     </button>
                 </div>
             ) : (
@@ -63,7 +64,7 @@ const LoginStatus = ({ user = null, setUser, loading }) => {
                     onClick={handleLogin}
                     className="px-4 py-2 text-sm font-medium text-white transition-colors bg-blue-600 rounded-md hover:bg-blue-700"
                 >
-                    Login
+                    {auth.login}
                 </button>
             )}
         </div>

@@ -1,15 +1,16 @@
 import { Link, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { navigation } from '../translations.js';
 
 const NavigationMenu = ({ user }) => {
     const location = useLocation();
 
     // Only show menu items that the user has access to
     const menuItems = [
-        { label: 'Home', path: '/', requiresAuth: false },
-        { label: 'Message of the day', path: '/motd-management', requiresAuth: true },
-        { label: 'Subjects', path: '/subject-management', requiresAuth: true },
-        { label: 'Activities', path: '/activities', requiresAuth: true }
+        { label: navigation.home, path: '/', requiresAuth: false },
+        { label: navigation.messageOfTheDay, path: '/motd-management', requiresAuth: true },
+        { label: navigation.subjects, path: '/subject-management', requiresAuth: true },
+        { label: navigation.activities, path: '/activities', requiresAuth: true }
     ];
 
     // Filter out protected routes for non-authenticated users
@@ -25,8 +26,8 @@ const NavigationMenu = ({ user }) => {
                     key={item.path}
                     to={item.path}
                     className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${location.pathname === item.path
-                            ? 'bg-gray-700 text-white'
-                            : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                        ? 'bg-gray-700 text-white'
+                        : 'text-gray-300 hover:bg-gray-700 hover:text-white'
                         }`}
                 >
                     {item.label}

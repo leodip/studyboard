@@ -5,6 +5,7 @@ import { apiUrl, endpoints } from '../config';
 import LoginStatus from '../components/auth/LoginStatus';
 import NavigationMenu from '../components/NavigationMenu';
 import Footer from '../components/Footer';
+import { mainLayout } from '../translations.js';
 
 const MainLayout = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -34,7 +35,7 @@ const MainLayout = ({ children }) => {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-8">
               <h1 className="text-3xl font-bold text-white">
-                studyboard
+                {mainLayout.appName}
               </h1>
               <NavigationMenu user={user} />
             </div>

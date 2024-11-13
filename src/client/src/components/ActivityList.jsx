@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { apiUrl } from '../config';
-import { ChevronDown, CheckCircle, Circle, CircleDot } from 'lucide-react';
+import { ChevronDown, CheckCircle, Circle, CircleDot, Calendar } from 'lucide-react';
+import { home, activities as activitiesTranslations } from '../translations.js';
 
 const ActivityList = () => {
     const [activities, setActivities] = useState([]);
@@ -15,9 +16,74 @@ const ActivityList = () => {
         completed: <CheckCircle className="w-5 h-5 text-green-400" />
     };
 
+    const statusTranslations = {
+        pending: activitiesTranslations.pending,
+        partially_done: activitiesTranslations.partiallyDone,
+        done: activitiesTranslations.done
+    };
+
     useEffect(() => {
         fetchActivities();
     }, []);
+
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+
+        // Use locale from translations
+        const weekDay = date.toLocaleDateString(home.locale, { weekday: 'long' });
+        const formattedDate = date.toLocaleDateString(home.locale, {
+            day: 'numeric',
+            month: 'long'
+        });
+
+        // Capitalize the first letter of the weekday
+        const capitalizedWeekDay = weekDay.charAt(0).toUpperCase() + weekDay.slice(1);
+
+        return {
+            weekDay: capitalizedWeekDay,
+            date: formattedDate
+        };
+    };
+
+    // Calculate if a date is today, tomorrow, or this week
+    const getDateContext = (dateString) => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        const date = new Date(dateString);
+        date.setHours(0, 0, 0, 0);
+
+        const diffTime = date.getTime() - today.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays < 0) return 'past';
+        if (diffDays === 0) return 'today';
+        if (diffDays === 1) return 'tomorrow';
+        if (diffDays <= 7) return 'thisWeek';
+        return 'future';
+    };
+
+    // Get the style class based on date context
+    const getDateStyles = (dateString) => {
+        const context = getDateContext(dateString);
+        const baseStyles = "flex items-center space-x-2 px-3 py-1.5 rounded-full font-medium";
+
+        switch (context) {
+            case 'past':
+                return `${baseStyles} bg-red-900/50 text-red-200`;
+            case 'today':
+                return `${baseStyles} bg-yellow-500/20 text-yellow-200`;
+            case 'tomorrow':
+                return `${baseStyles} bg-blue-500/20 text-blue-200`;
+            case 'thisWeek':
+                return `${baseStyles} bg-purple-500/20 text-purple-200`;
+            default:
+                return `${baseStyles} bg-gray-700 text-gray-300`;
+        }
+    };
 
     const fetchActivities = async () => {
         try {
@@ -34,7 +100,6 @@ const ActivityList = () => {
                     { withCredentials: true }
                 );
 
-                // Add subject name to each activity
                 const activitiesWithSubject = activitiesResponse.data.activities.map(
                     activity => ({
                         ...activity,
@@ -45,12 +110,10 @@ const ActivityList = () => {
                 allActivities = [...allActivities, ...activitiesWithSubject];
             }
 
-            // Filter for pending and partially_done activities
             allActivities = allActivities.filter(
                 activity => ['pending', 'partially_done'].includes(activity.status)
             );
 
-            // Sort by dueDate ASC, then dateCreated DESC
             allActivities.sort((a, b) => {
                 if (a.dueDate === b.dueDate) {
                     return new Date(b.dateCreated) - new Date(a.dateCreated);
@@ -75,15 +138,19 @@ const ActivityList = () => {
                 { withCredentials: true }
             );
             setDropdownOpen(null);
-            fetchActivities(); // Refresh the list
+            fetchActivities();
         } catch (err) {
             console.error('Error updating activity status:', err);
             setError('Failed to update activity status');
         }
     };
 
+    const getStatusDisplay = (status) => {
+        return statusTranslations[status] || status;
+    };
+
     if (loading) {
-        return <div className="p-4 text-gray-300">Loading activities...</div>;
+        return <div className="p-4 text-gray-300">{home.loadingActivities}</div>;
     }
 
     if (error) {
@@ -93,14 +160,14 @@ const ActivityList = () => {
     if (activities.length === 0) {
         return (
             <div className="p-8 text-center text-gray-400 bg-gray-800 rounded-lg">
-                No pending activities found
+                {home.noActivities}
             </div>
         );
     }
 
     return (
         <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-white">Pending Activities</h2>
+            <h2 className="text-2xl font-bold text-white">{home.pendingActivities}</h2>
             <div className="space-y-3">
                 {activities.map((activity) => (
                     <div
@@ -116,12 +183,15 @@ const ActivityList = () => {
                                     </span>
                                 </div>
                                 <p className="text-gray-300">{activity.description}</p>
-                                <div className="flex items-center space-x-4 text-sm">
-                                    <span className="text-gray-400">
-                                        Due: {new Date(activity.dueDate).toLocaleDateString()}
-                                    </span>
+                                <div className="flex items-center space-x-4">
+                                    <div className={getDateStyles(activity.dueDate)}>
+                                        <Calendar className="w-4 h-4" />
+                                        <span className="text-sm">
+                                            {formatDate(activity.dueDate).weekDay}, {formatDate(activity.dueDate).date}
+                                        </span>
+                                    </div>
                                     {activity.comments && (
-                                        <span className="text-gray-400">{activity.comments}</span>
+                                        <span className="text-sm text-gray-400">{activity.comments}</span>
                                     )}
                                 </div>
                             </div>
@@ -133,12 +203,12 @@ const ActivityList = () => {
                                     )}
                                     className="flex items-center px-3 py-1 space-x-1 text-gray-300 transition-colors border border-gray-600 rounded-md hover:bg-gray-700"
                                 >
-                                    <span>Status</span>
+                                    <span>{activitiesTranslations.status}</span>
                                     <ChevronDown className="w-4 h-4" />
                                 </button>
 
                                 {dropdownOpen === activity.id && (
-                                    <div className="absolute right-0 z-10 w-40 mt-2 bg-gray-700 rounded-md shadow-lg">
+                                    <div className="absolute right-0 z-10 w-56 mt-2 bg-gray-700 rounded-md shadow-lg">
                                         <div className="py-1">
                                             {['pending', 'partially_done', 'done'].map((status) => (
                                                 <button
@@ -149,7 +219,7 @@ const ActivityList = () => {
                                                     <span className="mr-2">
                                                         {statusIcons[status === 'done' ? 'completed' : status]}
                                                     </span>
-                                                    {status.replace('_', ' ')}
+                                                    {getStatusDisplay(status)}
                                                 </button>
                                             ))}
                                         </div>

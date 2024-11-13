@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { apiUrl } from '../config';
+import { subjects as t } from '../translations';
 
 const SubjectManagement = () => {
     const [subjects, setSubjects] = useState([]);
@@ -22,7 +23,7 @@ const SubjectManagement = () => {
             });
             setSubjects(response.data.subjects);
         } catch (err) {
-            setError('Failed to load subjects');
+            setError(t.error.fetch);
             console.error(err);
         } finally {
             setLoading(false);
@@ -45,7 +46,7 @@ const SubjectManagement = () => {
             setFormData({ name: '' });
             fetchSubjects();
         } catch (err) {
-            setError(editingSubject ? 'Failed to update subject' : 'Failed to create subject');
+            setError(editingSubject ? t.error.update : t.error.create);
             console.error(err);
         }
     };
@@ -62,7 +63,7 @@ const SubjectManagement = () => {
             });
             fetchSubjects();
         } catch (err) {
-            setError('Failed to delete subject');
+            setError(t.error.delete);
             console.error(err);
         }
     };
@@ -72,19 +73,18 @@ const SubjectManagement = () => {
         setFormData({ name: '' });
     };
 
-    if (loading) return <div className="text-gray-300">Loading...</div>;
+    if (loading) return <div className="text-gray-300">{t.loading}</div>;
     if (error) return <div className="text-red-500">{error}</div>;
 
     return (
         <div className="space-y-8">
             <div className="p-6 bg-gray-800 rounded-lg shadow-lg">
                 <h2 className="mb-4 text-2xl font-bold text-white">
-                    {editingSubject ? 'Edit Subject' : 'New Subject'}
+                    {editingSubject ? t.edit : t.new}
                 </h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <label className="block mb-2 text-sm font-medium text-gray-300">
-                            Name
+                        <label className="block mb-2 text-sm font-medium text-gray-300">{t.form.name}
                         </label>
                         <input
                             type="text"
@@ -99,7 +99,7 @@ const SubjectManagement = () => {
                             type="submit"
                             className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
                         >
-                            {editingSubject ? 'Update Subject' : 'Create Subject'}
+                            {editingSubject ? t.form.updateButton : t.form.createButton}
                         </button>
                         {editingSubject && (
                             <button
@@ -107,7 +107,7 @@ const SubjectManagement = () => {
                                 onClick={handleCancel}
                                 className="px-4 py-2 text-gray-300 transition-colors border border-gray-600 rounded-md hover:bg-gray-700"
                             >
-                                Cancel
+                                {t.form.cancelButton}
                             </button>
                         )}
                     </div>
@@ -115,7 +115,7 @@ const SubjectManagement = () => {
             </div>
 
             <div className="p-6 bg-gray-800 rounded-lg shadow-lg">
-                <h2 className="mb-4 text-2xl font-bold text-white">Subjects</h2>
+                <h2 className="mb-4 text-2xl font-bold text-white">{t.list.title}</h2>
                 <div className="space-y-4">
                     {subjects.map((subject) => (
                         <div key={subject.id} className="p-4 bg-gray-700 rounded-lg">
@@ -126,20 +126,20 @@ const SubjectManagement = () => {
                                         onClick={() => handleEdit(subject)}
                                         className="px-3 py-1 text-sm text-blue-400 transition-colors border border-blue-400 rounded-md hover:bg-blue-400 hover:text-white"
                                     >
-                                        Edit
+                                        {t.list.editButton}
                                     </button>
                                     <button
                                         onClick={() => handleDelete(subject.id)}
                                         className="px-3 py-1 text-sm text-red-400 transition-colors border border-red-400 rounded-md hover:bg-red-400 hover:text-white"
                                     >
-                                        Delete
+                                        {t.list.deleteButton}
                                     </button>
                                 </div>
                             </div>
                         </div>
                     ))}
                     {subjects.length === 0 && (
-                        <p className="text-center text-gray-400">No subjects found</p>
+                        <p className="text-center text-gray-400">{t.list.noSubjects}</p>
                     )}
                 </div>
             </div>

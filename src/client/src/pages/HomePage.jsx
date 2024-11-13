@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { apiUrl, endpoints } from '../config';
 import ActivityList from '../components/ActivityList';
+import { home } from '../translations.js';
 
 function HomePage() {
     const [user, setUser] = useState(null);
@@ -39,7 +40,7 @@ function HomePage() {
             <section className="text-center">
                 {user && (
                     <h1 className="mb-4 text-4xl font-bold text-white">
-                        Welcome back
+                        {home.welcome}
                     </h1>
                 )}
             </section>
