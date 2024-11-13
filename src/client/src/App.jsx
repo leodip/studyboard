@@ -3,6 +3,7 @@ import MainLayout from './layout/MainLayout';
 import HomePage from './pages/HomePage';
 import ErrorPage from './pages/ErrorPage';
 import MessageOfTheDayManagement from './pages/MessageOfTheDayManagement';
+import SubjectManagement from './pages/SubjectManagement';
 
 function App() {
     return (
@@ -22,6 +23,14 @@ function App() {
                     element={
                         <MainLayout>
                             <MessageOfTheDayManagement />
+                        </MainLayout>
+                    }
+                />
+                <Route
+                    path="/subject-management"
+                    element={
+                        <MainLayout>
+                            <SubjectManagement />
                         </MainLayout>
                     }
                 />

@@ -6,6 +6,7 @@ import { cors as _cors, auth, app as _app, server } from './config/index.js';
 import authRouter from './routes/auth.js';
 import { initializeDatabase, checkDatabaseHealth } from './db/index.js';
 import motdRouter from './routes/motd.js';
+import subjectsRouter from './routes/subject.js';
 
 const app = express();
 let discoveryConfig = null;
@@ -33,6 +34,7 @@ app.get('/health', (req, res) => {
 // Routes
 app.use('/', authRouter);
 app.use('/api', motdRouter);
+app.use('/api', subjectsRouter);
 
 // Error handling
 app.use((err, req, res, next) => {
