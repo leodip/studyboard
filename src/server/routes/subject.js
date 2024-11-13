@@ -10,7 +10,7 @@ import {
 const router = express.Router();
 
 // Get all subjects
-router.get('/subjects', async (req, res) => {
+router.get('/subjects', requireAuth, async (req, res) => {
     try {
         const subjects = await getAllSubjects();
         res.json({ subjects });

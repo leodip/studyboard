@@ -7,6 +7,7 @@ import authRouter from './routes/auth.js';
 import { initializeDatabase, checkDatabaseHealth } from './db/index.js';
 import motdRouter from './routes/motd.js';
 import subjectsRouter from './routes/subject.js';
+import activitiesRouter from './routes/activity.js';
 
 const app = express();
 let discoveryConfig = null;
@@ -35,6 +36,7 @@ app.get('/health', (req, res) => {
 app.use('/', authRouter);
 app.use('/api', motdRouter);
 app.use('/api', subjectsRouter);
+app.use('/api', activitiesRouter);
 
 // Error handling
 app.use((err, req, res, next) => {
