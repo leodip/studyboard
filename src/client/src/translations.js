@@ -33,7 +33,7 @@ const errorPage = {
 // Homepage
 const home = {
     locale: "pt-PT",
-    welcome: "Bem-vindo de volta",
+    welcome: "Seja bem vindo(a)",
     pendingActivities: "Atividades pendentes",
     noActivities: "Parabéns, você não tem atividades pendentes!",
     loadingActivities: "A carregar atividades...",
