@@ -77,6 +77,30 @@ async function initializeDatabase() {
             );
         `);
 
+        console.log('Creating audit_logs table...');
+        await db.exec(`
+            CREATE TABLE IF NOT EXISTS audit_logs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id TEXT NOT NULL,
+                user_email TEXT NOT NULL,
+                action TEXT NOT NULL,
+                entity_type TEXT NOT NULL,
+                entity_id INTEGER NOT NULL,
+                old_values TEXT,
+                new_values TEXT,
+                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_audit_logs_entity 
+            ON audit_logs(entity_type, entity_id);
+
+            CREATE INDEX IF NOT EXISTS idx_audit_logs_user 
+            ON audit_logs(user_id);
+
+            CREATE INDEX IF NOT EXISTS idx_audit_logs_timestamp 
+            ON audit_logs(timestamp);
+        `);
+
         console.log('Creating triggers...');
         await db.exec(`
             --Trigger to update dateUpdated on subjects
@@ -134,25 +158,125 @@ async function checkDatabaseHealth() {
         const tables = await db.all(`
             SELECT name FROM sqlite_master 
             WHERE type = 'table' 
-            AND name IN('subjects', 'activities')
-            `);
+            AND name IN('subjects', 'activities', 'messages_of_the_day', 'audit_logs')
+        `);
 
-        const hasAllTables = tables.length === 2;
+        const hasAllTables = tables.length === 4;
 
         // Verify triggers exist
         const triggers = await db.all(`
             SELECT name FROM sqlite_master 
             WHERE type = 'trigger' 
-            AND name IN('update_subject_timestamp', 'update_activity_timestamp')
+            AND name IN('update_subject_timestamp', 'update_activity_timestamp', 'update_motd_timestamp')
         `);
 
-        const hasAllTriggers = triggers.length === 2;
+        const hasAllTriggers = triggers.length === 3;
 
         return {
             healthy: hasAllTables && hasAllTriggers,
             tables: tables.map(t => t.name),
             triggers: triggers.map(t => t.name)
         };
+    } finally {
+        await db.close();
+    }
+}
+
+// Audit log functions
+async function createAuditLog(req, {
+    action,
+    entityType,
+    entityId,
+    oldValues = null,
+    newValues = null
+}) {
+    const db = await getDb();
+    try {
+        const userId = req.session.user.idTokenClaims.sub;
+        const userEmail = req.session.user.idTokenClaims.email;
+
+        await db.run(
+            `INSERT INTO audit_logs 
+            (user_id, user_email, action, entity_type, entity_id, old_values, new_values)
+            VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            [
+                userId,
+                userEmail,
+                action,
+                entityType,
+                entityId,
+                oldValues ? JSON.stringify(oldValues) : null,
+                newValues ? JSON.stringify(newValues) : null
+            ]
+        );
+    } finally {
+        await db.close();
+    }
+}
+
+async function getAuditLogs({
+    entityType = null,
+    entityId = null,
+    userId = null,
+    startDate = null,
+    endDate = null,
+    limit = 100,
+    offset = 0
+}) {
+    const db = await getDb();
+    try {
+        console.log('getAuditLogs - Input parameters:', {
+            entityType,
+            entityId,
+            userId,
+            startDate,
+            endDate,
+            limit,
+            offset
+        });
+
+        let query = 'SELECT * FROM audit_logs WHERE 1=1';
+        const params = [];
+
+        if (entityType) {
+            query += ' AND entity_type = ?';
+            params.push(entityType);
+        }
+
+        if (entityId) {
+            query += ' AND entity_id = ?';
+            params.push(entityId);
+        }
+
+        if (userId) {
+            query += ' AND user_id = ?';
+            params.push(userId);
+        }
+
+        if (startDate) {
+            query += ' AND timestamp >= ?';
+            params.push(startDate);
+        }
+
+        if (endDate) {
+            query += ' AND timestamp <= ?';
+            params.push(endDate);
+        }
+
+        // Only add LIMIT and OFFSET if limit is not null
+        if (limit !== null) {
+            query += ' ORDER BY timestamp DESC LIMIT ? OFFSET ?';
+            params.push(limit, offset);
+        }
+
+        console.log('Generated SQL Query:', query);
+        console.log('Query Parameters:', params);
+
+        return await db.all(query, params);
+    } catch (error) {
+        console.error('Database error in getAuditLogs:', error);
+        console.error('Error stack:', error.stack);
+        throw error;
     } finally {
         await db.close();
     }
@@ -239,10 +363,10 @@ async function updateActivity(id, updates) {
     await db.run(
         `UPDATE activities 
          SET description = COALESCE(?, description),
-            status = COALESCE(?, status),
-            dueDate = COALESCE(?, dueDate),
-            comments = COALESCE(?, comments)
-         WHERE id = ? `,
+             status = COALESCE(?, status),
+             dueDate = COALESCE(?, dueDate),
+             comments = COALESCE(?, comments)
+         WHERE id = ?`,
         [description, status, dueDate, comments, id]
     );
     await db.close();
@@ -274,7 +398,7 @@ async function getActivityStats() {
     const db = await getDb();
     const stats = await db.get(
         `SELECT
-        COUNT(*) as total,
+            COUNT(*) as total,
             SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending,
             SUM(CASE WHEN status = 'partially_done' THEN 1 ELSE 0 END) as partiallyDone,
             SUM(CASE WHEN status = 'done' THEN 1 ELSE 0 END) as completed
@@ -284,6 +408,7 @@ async function getActivityStats() {
     return stats;
 }
 
+// Message of the Day operations
 async function createMessageOfTheDay(message, author = null, link = null) {
     const db = await getDb();
     const result = await db.run(
@@ -344,6 +469,7 @@ async function deleteMessageOfTheDay(id) {
 }
 
 export {
+    getDb,
     initializeDatabase,
     checkDatabaseHealth,
     createSubject,
@@ -363,5 +489,7 @@ export {
     getLatestMessageOfTheDay,
     getAllMessagesOfTheDay,
     updateMessageOfTheDay,
-    deleteMessageOfTheDay
+    deleteMessageOfTheDay,
+    createAuditLog,
+    getAuditLogs
 };

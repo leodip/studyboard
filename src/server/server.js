@@ -10,6 +10,8 @@ import { initializeDatabase, checkDatabaseHealth } from './db/index.js';
 import motdRouter from './routes/motd.js';
 import subjectsRouter from './routes/subject.js';
 import activitiesRouter from './routes/activity.js';
+import auditRouter from './routes/audit.js';
+import { up as migration001 } from './db/migrations/001_add_audit_logs.js';
 
 const app = express();
 let discoveryConfig = null;
@@ -106,6 +108,7 @@ app.use('/', authRouter);
 app.use('/api', motdRouter);
 app.use('/api', subjectsRouter);
 app.use('/api', activitiesRouter);
+app.use('/api', auditRouter);
 
 // Serve React app for all other routes
 app.get('*', (req, res) => {
@@ -153,6 +156,12 @@ async function startServer() {
     try {
         // Initialize services
         await initializeOIDC();
+
+        // Run migrations in order
+        console.log('Running database migrations...');
+        await migration001();  // Run migration 001
+
+        // Initialize database (creates tables if they don't exist)
         await initializeDatabase();
 
         // Health checks

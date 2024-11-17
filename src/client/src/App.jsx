@@ -7,6 +7,7 @@ import MotdList from './pages/MotdList';
 import SubjectList from './pages/SubjectList';
 import About from './pages/About';
 import ActivitiesList from './pages/ActivitiesList';
+import AuditLogs from './pages/AuditLogs';
 
 function App() {
   return (
@@ -32,6 +33,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <ActivitiesList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/audit-logs"
+            element={
+              <ProtectedRoute>
+                <AuditLogs />
               </ProtectedRoute>
             }
           />

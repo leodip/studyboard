@@ -4,12 +4,14 @@ import {
     createSubject,
     getAllSubjects,
     updateSubject,
-    deleteSubject
+    deleteSubject,
+    getSubject,
+    createAuditLog
 } from '../db/index.js';
 
 const router = express.Router();
 
-// Get all subjects
+// Get all subjects (no audit needed for reads)
 router.get('/subjects', requireAuth, async (req, res) => {
     try {
         const subjects = await getAllSubjects();
@@ -23,7 +25,7 @@ router.get('/subjects', requireAuth, async (req, res) => {
     }
 });
 
-// Create new subject (authenticated users only)
+// Create new subject
 router.post('/subjects', requireAuth, async (req, res) => {
     try {
         const { name } = req.body;
@@ -32,6 +34,21 @@ router.post('/subjects', requireAuth, async (req, res) => {
         }
 
         const id = await createSubject(name);
+
+        // Create audit log for new subject
+        try {
+            await createAuditLog(req, {
+                action: 'CREATE',
+                entityType: 'subject',
+                entityId: id,
+                oldValues: null,
+                newValues: { name }
+            });
+        } catch (auditError) {
+            console.error('Audit log creation failed:', auditError);
+            // Continue despite audit failure
+        }
+
         res.json({ id });
     } catch (error) {
         console.error('Error creating subject:', error);
@@ -42,7 +59,7 @@ router.post('/subjects', requireAuth, async (req, res) => {
     }
 });
 
-// Update subject (authenticated users only)
+// Update subject
 router.put('/subjects/:id', requireAuth, async (req, res) => {
     try {
         const { name } = req.body;
@@ -50,7 +67,28 @@ router.put('/subjects/:id', requireAuth, async (req, res) => {
             return res.status(400).json({ error: 'Subject name is required' });
         }
 
+        // Get old state for audit
+        const oldSubject = await getSubject(req.params.id);
+        if (!oldSubject) {
+            return res.status(404).json({ error: 'Subject not found' });
+        }
+
         await updateSubject(req.params.id, name);
+
+        // Create audit log for update
+        try {
+            await createAuditLog(req, {
+                action: 'UPDATE',
+                entityType: 'subject',
+                entityId: req.params.id,
+                oldValues: { name: oldSubject.name },
+                newValues: { name }
+            });
+        } catch (auditError) {
+            console.error('Audit log creation failed:', auditError);
+            // Continue despite audit failure
+        }
+
         res.json({ success: true });
     } catch (error) {
         console.error('Error updating subject:', error);
@@ -61,10 +99,31 @@ router.put('/subjects/:id', requireAuth, async (req, res) => {
     }
 });
 
-// Delete subject (authenticated users only)
+// Delete subject
 router.delete('/subjects/:id', requireAuth, async (req, res) => {
     try {
+        // Get old state for audit
+        const oldSubject = await getSubject(req.params.id);
+        if (!oldSubject) {
+            return res.status(404).json({ error: 'Subject not found' });
+        }
+
         await deleteSubject(req.params.id);
+
+        // Create audit log for deletion
+        try {
+            await createAuditLog(req, {
+                action: 'DELETE',
+                entityType: 'subject',
+                entityId: req.params.id,
+                oldValues: { name: oldSubject.name },
+                newValues: null
+            });
+        } catch (auditError) {
+            console.error('Audit log creation failed:', auditError);
+            // Continue despite audit failure
+        }
+
         res.json({ success: true });
     } catch (error) {
         console.error('Error deleting subject:', error);

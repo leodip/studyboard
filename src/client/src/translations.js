@@ -13,6 +13,7 @@ const navigation = {
     messageOfTheDay: "Mensagem do dia",
     subjects: "Disciplinas",
     activities: "Atividades",
+    auditLogs: "Registos de auditoria",
     about: "Sobre",
 };
 
@@ -142,6 +143,28 @@ const motd = {
     }
 };
 
+const auditLogs = {
+    title: "Registos de auditoria",
+    timestamp: "Data/hora",
+    user: "Utilizador",
+    action: "Ação",
+    entityType: "Tipo",
+    entityId: "ID",
+    changes: "Alterações",
+    oldValues: "Valores anteriores",
+    newValues: "Novos valores",
+    loading: "A carregar registos...",
+    error: {
+        fetch: "Erro ao carregar registos de auditoria",
+    },
+    pagination: {
+        showing: "Mostrando página",
+        of: "de",
+        previous: "Anterior",
+        next: "Próxima"
+    }
+};
+
 const about = {
     title: "Sobre o studyboard",
     description: "O Studyboard é uma aplicação simples para ajudar estudantes a organizar as suas tarefas escolares. Desenvolvido com carinho para ajudar no sucesso escolar."
@@ -156,5 +179,6 @@ export {
     activities,
     subjects,
     motd,
-    about
+    about,
+    auditLogs
 };
