@@ -44,11 +44,11 @@ router.get('/activities/:id', requireAuth, async (req, res) => {
 // Create new activity (authenticated users only)
 router.post('/activities', requireAuth, async (req, res) => {
     try {
-        const { subjectId, description, dueDate, comments } = req.body;
+        const { subjectId, description, dueDate, status, comments } = req.body;
 
-        if (!subjectId || !description || !dueDate) {
+        if (!subjectId || !description || !status || !dueDate) {
             return res.status(400).json({
-                error: 'Subject ID, description, and due date are required'
+                error: 'Subject ID, description, status and due date are required'
             });
         }
 
@@ -56,6 +56,7 @@ router.post('/activities', requireAuth, async (req, res) => {
             subjectId,
             description,
             dueDate,
+            status,
             comments
         );
 

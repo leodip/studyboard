@@ -202,11 +202,11 @@ async function deleteSubject(id) {
 }
 
 // Activity operations
-async function createActivity(subjectId, description, dueDate, comments = null) {
+async function createActivity(subjectId, description, dueDate, status, comments = null) {
     const db = await getDb();
     const result = await db.run(
-        'INSERT INTO activities (subjectId, description, dueDate, comments) VALUES (?, ?, ?, ?)',
-        [subjectId, description, dueDate, comments]
+        'INSERT INTO activities (subjectId, description, dueDate, status, comments) VALUES (?, ?, ?, ?, ?)',
+        [subjectId, description, dueDate, status, comments]
     );
     await db.close();
     return result.lastID;

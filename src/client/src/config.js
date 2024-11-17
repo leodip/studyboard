@@ -6,5 +6,7 @@ export const endpoints = {
     logout: '/logout',
     callback: '/callback',
     user: '/user-info',
-    motd: '/api/motd'
+    motd: '/api/motd',
+    subjects: '/api/subjects',
+    activities: '/api/activities'
 };
