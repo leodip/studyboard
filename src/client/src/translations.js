@@ -2,9 +2,7 @@ const layout = {
     appName: "studyboard",
     locale: "pt-PT",
     loading: "A carregar...",
-    error: "Ocorreu um erro",
     toggleSidebar: "Alternar barra lateral",
-    closeMenu: "Fechar menu",
     closeModal: "Fechar modal",
 };
 
@@ -22,19 +20,9 @@ const auth = {
     logout: "Terminar sessão",
 };
 
-const errorPage = {
-    title: "Erro de autenticação",
-    errorCode: "Código de erro",
-    errorType: "Tipo de erro",
-    description: "Descrição",
-    unknownError: "Ocorreu um erro desconhecido durante a autenticação.",
-    returnHome: "Voltar ao início"
-};
-
 const home = {
-    welcome: "Bem-vindo(a)",
-    pendingActivities: "Atividades pendentes",
-    noActivities: "Parabéns, não tem atividades pendentes!",
+    noPendingActivities: "Não foram encontradas atividades pendentes",
+    noCompletedActivities: "Não foram encontradas atividades concluídas",
 };
 
 const activities = {
@@ -72,8 +60,6 @@ const activities = {
         confirmButton: "Sim, eliminar",
         cancelButton: "Cancelar"
     },
-    today: "Hoje",
-    clear: "Limpar",
 };
 
 const subjects = {
@@ -174,7 +160,6 @@ export {
     layout,
     navigation,
     auth,
-    errorPage,
     home,
     activities,
     subjects,

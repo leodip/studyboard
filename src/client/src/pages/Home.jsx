@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { apiUrl, endpoints } from '../config';
-import { activities, layout } from '../translations';
+import { activities, layout, home } from '../translations';
 import { ActivityStatus } from '../components/ActivityStatus';
 
 export default function Home() {
@@ -132,7 +132,7 @@ export default function Home() {
 
             {filteredActivities.length === 0 ? (
                 <div className="text-center text-gray-500 dark:text-gray-400">
-                    {selectedFilter === 'pending' ? 'No pending activities' : 'No completed activities'}
+                    {selectedFilter === 'pending' ? home.noPendingActivities : home.noCompletedActivities}
                 </div>
             ) : (
                 <div className="grid gap-4">
