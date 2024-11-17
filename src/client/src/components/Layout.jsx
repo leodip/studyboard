@@ -6,7 +6,7 @@ import { Outlet, Link } from 'react-router-dom';
 import { layout, navigation } from '../translations.js';
 import { AuthStatus } from '../auth/AuthStatus';
 import DarkModeToggle from './DarkModeToggle';
-
+import { initFlowbite } from 'flowbite';
 
 export default function Layout({ user, setUser }) {
     const [randomMessage, setRandomMessage] = useState(null);
@@ -26,6 +26,12 @@ export default function Layout({ user, setUser }) {
         };
 
         fetchMessages();
+    }, []);
+
+    useEffect(() => {
+        setTimeout(() => {
+            initFlowbite();
+        }, 100);
     }, []);
 
     return (

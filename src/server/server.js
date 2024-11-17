@@ -56,7 +56,7 @@ const sessionConfig = {
         secure: _app.env === 'production',  // Only use secure in production
         httpOnly: true,
         sameSite: _app.env === 'production' ? 'none' : 'lax',
-        maxAge: 604800, // 7 days
+        maxAge: 604800000, // 7 days
         domain: cookieDomain,
         path: '/'
     }
