@@ -154,15 +154,15 @@ async function initializeOIDC() {
 
 async function startServer() {
     try {
-        // Initialize services
+        // Initialize OIDC first
         await initializeOIDC();
 
-        // Run migrations in order
-        console.log('Running database migrations...');
-        await migration001();  // Run migration 001
-
-        // Initialize database (creates tables if they don't exist)
+        // Initialize database (will create all tables if needed)
         await initializeDatabase();
+
+        // Run migrations after initialization
+        console.log('Running database migrations...');
+        await migration001();
 
         // Health checks
         const health = await checkDatabaseHealth();

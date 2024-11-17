@@ -123,9 +123,9 @@ export default function Layout() {
                                                 data-drawer-hide="drawer-navigation"
                                             >
                                                 <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 6.9c0-.994.708-2.037 2.038-2.37 1.915-.482 4.722-.58 7.962-.53 3.24.05 6.047.148 7.961.53C25.292 4.863 26 5.906 26 6.9v10.2c0 .994-.708 2.037-2.038 2.37-1.915.482-4.722.58-7.962.53-3.24-.05-6.047-.148-7.961-.53C6.708 19.137 6 18.094 6 17.1V6.9Z" />
-                                                    <path stroke="currentColor" strokeLinecap="round" strokeWidth="2" d="M12 8v8m-4-6v4m8-6v8" />
+                                                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14v3m-3-6V7a3 3 0 1 1 6 0v4m-8 0h10a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1Z" />
                                                 </svg>
+
                                                 <span className="ml-3">{navigation.auditLogs}</span>
                                             </Link>
                                         </li>

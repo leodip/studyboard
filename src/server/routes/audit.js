@@ -1,6 +1,6 @@
 import express from 'express';
 import { requireAuth } from '../middleware/requireAuth.js';
-import { getAuditLogs } from '../db/index.js';
+import { getAuditLogs, getAuditLogsCount } from '../db/index.js';
 
 const router = express.Router();
 
@@ -45,14 +45,12 @@ router.get('/audit-logs', requireAuth, async (req, res) => {
             offset
         });
 
-        // Get total count
-        const totalCount = await getAuditLogs({
+        // Get total count using the db function
+        const totalCount = await getAuditLogsCount({
             entityType: req.query.entityType || null,
             entityId,
-            userId: req.query.userId || null,
-            limit: null,
-            offset: null
-        }).then(results => results.length);
+            userId: req.query.userId || null
+        });
 
         res.json({
             logs,
