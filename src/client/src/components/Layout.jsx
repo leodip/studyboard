@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { apiUrl, endpoints } from '../config';
@@ -5,10 +6,9 @@ import { Outlet, Link } from 'react-router-dom';
 import { layout, navigation } from '../translations.js';
 import { AuthStatus } from '../auth/AuthStatus';
 import DarkModeToggle from './DarkModeToggle';
-import { useAuth } from '../auth/authHooks';
 
-export default function Layout() {
-    const { user } = useAuth();
+
+export default function Layout({ user, setUser }) {
     const [randomMessage, setRandomMessage] = useState(null);
 
     useEffect(() => {
@@ -17,7 +17,6 @@ export default function Layout() {
                 const response = await axios.get(`${apiUrl}${endpoints.motd}`);
                 const messages = response.data.messages;
                 if (messages && messages.length > 0) {
-                    // Select a random message
                     const randomIndex = Math.floor(Math.random() * messages.length);
                     setRandomMessage(messages[randomIndex]);
                 }
@@ -73,7 +72,7 @@ export default function Layout() {
                         {/* Close button remains the same ... */}
 
                         <div className="mb-2 text-center">
-                            <AuthStatus />
+                            <AuthStatus user={user} setUser={setUser} />
                         </div>
 
                         <div className="py-2 overflow-y-auto">
@@ -205,3 +204,8 @@ export default function Layout() {
         </div>
     );
 }
+
+Layout.propTypes = {
+    user: PropTypes.object,
+    setUser: PropTypes.func.isRequired
+};

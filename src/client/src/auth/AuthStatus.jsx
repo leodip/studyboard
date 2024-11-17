@@ -1,21 +1,39 @@
-import { useAuth } from './authHooks';
+// src/client/src/auth/AuthStatus.jsx
+import PropTypes from 'prop-types';
+import axios from 'axios';
+import { apiUrl, endpoints } from '../config';
 import { auth } from '../translations';
 
-export function AuthStatus() {
-    const { user, loading, error, login, logout } = useAuth();
+export function AuthStatus({ user, setUser }) {
+    const login = async () => {
+        try {
+            const response = await axios.get(`${apiUrl}${endpoints.login}`, {
+                withCredentials: true
+            });
+            if (response.data.loginUrl) {
+                window.location.href = response.data.loginUrl;
+            }
+        } catch (err) {
+            console.error('Login failed:', err);
+        }
+    };
 
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center">
-                <div className="w-4 h-4 border-2 border-gray-300 rounded-full border-t-transparent animate-spin" />
-                <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">{auth.loading}</span>
-            </div>
-        );
-    }
-
-    if (error) {
-        console.error('Auth error:', error);
-    }
+    const logout = async () => {
+        try {
+            const response = await axios.post(`${apiUrl}${endpoints.logout}`, {}, {
+                withCredentials: true
+            });
+            setUser(null);
+            if (response.data.redirectUrl) {
+                window.location.href = response.data.redirectUrl;
+            } else {
+                window.location.href = '/';
+            }
+        } catch (err) {
+            console.error('Logout failed:', err);
+            window.location.href = '/';
+        }
+    };
 
     return (
         <div className="text-center text-gray-500 dark:text-gray-400">
@@ -45,3 +63,8 @@ export function AuthStatus() {
         </div>
     );
 }
+
+AuthStatus.propTypes = {
+    user: PropTypes.object,
+    setUser: PropTypes.func.isRequired
+};
