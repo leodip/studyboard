@@ -49,7 +49,7 @@ export default function Home() {
     // Filter activities based on status
     const filteredActivities = activityList.filter(activity => {
         if (selectedFilter === 'pending') {
-            return activity.status === 'pending' || activity.status === 'partially_done';
+            return activity.status === 'pending' || activity.status === 'partially_done' || activity.status === 'optional';
         } else {
             return activity.status === 'done';
         }
@@ -106,7 +106,7 @@ export default function Home() {
     }
 
     return (
-        <div className="container px-4 mx-auto">
+        <div className="container px-4 mx-auto mt-4">
             <div className="mb-6">
                 <div className="inline-flex border border-gray-200 rounded-lg dark:border-gray-700">
                     <button
@@ -168,6 +168,7 @@ export default function Home() {
                                     >
                                         <option value="pending">{activities.pending}</option>
                                         <option value="partially_done">{activities.partiallyDone}</option>
+                                        <option value="optional">{activities.optional}</option>
                                         <option value="done">{activities.done}</option>
                                     </select>
                                 </div>

@@ -5,6 +5,7 @@ import { activities, layout } from '../translations';
 import { initFlowbite } from 'flowbite';
 import FlowbiteDatepicker from '../components/FlowbiteDatepicker';
 import { ActivityStatus } from '../components/ActivityStatus';
+import { getStatusText } from '../utils/activityUtils';
 
 
 export default function ActivitiesList() {
@@ -449,20 +450,12 @@ export default function ActivitiesList() {
                                     <select
                                         id="status"
                                         value={formData.status}
-                                        onChange={(e) => {
-                                            const newStatus = e.target.value;
-                                            setFormData(prevData => {
-                                                const updated = {
-                                                    ...prevData,
-                                                    status: newStatus
-                                                };
-                                                return updated;
-                                            });
-                                        }}
+                                        onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                                     >
                                         <option value="pending">{activities.pending}</option>
                                         <option value="partially_done">{activities.partiallyDone}</option>
+                                        <option value="optional">{activities.optional}</option>
                                         <option value="done">{activities.done}</option>
                                     </select>
                                 </div>
@@ -564,6 +557,7 @@ export default function ActivitiesList() {
                                     >
                                         <option value="pending">{activities.pending}</option>
                                         <option value="partially_done">{activities.partiallyDone}</option>
+                                        <option value="optional">{activities.optional}</option>
                                         <option value="done">{activities.done}</option>
                                     </select>
                                 </div>
@@ -632,11 +626,7 @@ export default function ActivitiesList() {
                                         {activities.list.due}: {new Date(activityToDelete.dueDate).toLocaleDateString(layout.locale)}
                                     </p>
                                     <p className="text-sm text-gray-600 dark:text-gray-300">
-                                        {activities.form.status}: {activityToDelete.status === 'pending'
-                                            ? activities.pending
-                                            : activityToDelete.status === 'partially_done'
-                                                ? activities.partiallyDone
-                                                : activities.done}
+                                        {activities.form.status}: {getStatusText(activityToDelete.status)}
                                     </p>
                                     {activityToDelete.comments && (
                                         <p className="text-sm text-gray-600 dark:text-gray-300">

@@ -30,6 +30,7 @@ const activities = {
     pending: "Pendente",
     partiallyDone: "Parcialmente concluído",
     done: "Concluído",
+    optional: "Opcional",
     new: "Nova atividade",
     edit: "Editar atividade",
     form: {

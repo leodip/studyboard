@@ -12,6 +12,7 @@ import subjectsRouter from './routes/subject.js';
 import activitiesRouter from './routes/activity.js';
 import auditRouter from './routes/audit.js';
 import { up as migration001 } from './db/migrations/001_add_audit_logs.js';
+import { up as migration002 } from './db/migrations/002_add_optional_status.js';
 
 const app = express();
 let discoveryConfig = null;
@@ -163,6 +164,7 @@ async function startServer() {
         // Run migrations after initialization
         console.log('Running database migrations...');
         await migration001();
+        await migration002();
 
         // Health checks
         const health = await checkDatabaseHealth();

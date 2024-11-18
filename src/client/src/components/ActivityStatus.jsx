@@ -1,34 +1,23 @@
-// src/components/ActivityStatus.jsx
 import PropTypes from 'prop-types';
-import { activities } from '../translations';
+import { getStatusText } from '../utils/activityUtils';
 
 const statusStyles = {
     done: {
-        base: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+        base: 'bg-transparent border border-green-600 text-green-600 dark:border-green-400 dark:text-green-400'
     },
     partially_done: {
-        base: 'bg-yellow-200 text-yellow-700 dark:bg-yellow-800 dark:text-yellow-200'
+        base: 'bg-transparent border border-yellow-600 text-yellow-600 dark:border-yellow-400 dark:text-yellow-400'
     },
     pending: {
-        base: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+        base: 'bg-transparent border border-red-600 text-red-600 dark:border-red-400 dark:text-red-400'
+    },
+    optional: {
+        base: 'bg-transparent border border-gray-600 text-gray-600 dark:border-gray-400 dark:text-gray-400'
     }
 };
 
 const getStatusStyle = (status) => {
     return statusStyles[status]?.base || statusStyles.pending.base;
-};
-
-const getStatusText = (status) => {
-    switch (status) {
-        case 'done':
-            return activities.done;
-        case 'partially_done':
-            return activities.partiallyDone;
-        case 'pending':
-            return activities.pending;
-        default:
-            return activities.pending;
-    }
 };
 
 export const ActivityStatus = ({ status }) => (
@@ -38,5 +27,5 @@ export const ActivityStatus = ({ status }) => (
 );
 
 ActivityStatus.propTypes = {
-    status: PropTypes.oneOf(['pending', 'partially_done', 'done']).isRequired
+    status: PropTypes.oneOf(['pending', 'partially_done', 'done', 'optional']).isRequired
 };
